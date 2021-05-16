@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vit.springsecurityjwt.filters.JwtRequestFilter;
 import com.vit.springsecurityjwt.models.AuthenticationRequest;
 import com.vit.springsecurityjwt.models.AuthenticationResponse;
+import com.vit.springsecurityjwt.models.Usermodel;
 import com.vit.springsecurityjwt.util.JwtUtil;
 
 @SpringBootApplication
@@ -45,9 +46,13 @@ class SessionController {
 
 	@Autowired
 	private JwtUtil jwtTokenUtil;
+	
+	@Autowired
+	UserFetchService userfetchservice;
 
 	@Autowired
 	private MyUserDetailsService userDetailsService;
+	
 
 	@RequestMapping({ "/authorize" })
 	public String firstPage() {
@@ -65,12 +70,15 @@ class SessionController {
 		catch (BadCredentialsException e) {
 			throw new Exception("Incorrect username or password", e);
 		}
+		String jwt = null;
+		Usermodel usermodel = userfetchservice.findUser(authenticationRequest.getUsername());
 
+		if(usermodel.getUsername().equals(authenticationRequest.getUsername())) {
+			final UserDetails userDetails = userDetailsService
+					.loadUserByUsername(authenticationRequest.getUsername());
+			jwt = jwtTokenUtil.generateToken(userDetails);
 
-		final UserDetails userDetails = userDetailsService
-				.loadUserByUsername(authenticationRequest.getUsername());
-
-		final String jwt = jwtTokenUtil.generateToken(userDetails);
+		}
 
 		return ResponseEntity.ok(new AuthenticationResponse(jwt));
 	}

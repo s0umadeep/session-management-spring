@@ -2,9 +2,19 @@ package com.vit.springsecurityjwt.models;
 
 import java.io.Serializable;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "AuthenticUsers")
 public class AuthenticationRequest implements Serializable {
 
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	@Id
     private String username;
     private String password;
 
@@ -24,7 +34,6 @@ public class AuthenticationRequest implements Serializable {
         this.password = password;
     }
 
-    //need default constructor for JSON Parsing
     public AuthenticationRequest()
     {
 
